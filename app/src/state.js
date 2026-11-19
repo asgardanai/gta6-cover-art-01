@@ -4,6 +4,30 @@
 
 import { LAYOUTS } from './layouts.js';
 
+/**
+ * Where the subject sits in each demo photo, as fractions of the photo's
+ * width and height. The renderer anchors the default crop on this point so
+ * a face stays in frame however the panel is shaped — faces live in the
+ * upper third, so a plain centred crop cuts them off in wide, short panels.
+ * pier: the fisherman stands left of frame, face near the top. boulevard:
+ * the woman is centred, face near the top. neon: two laughing friends, faces
+ * spread across the upper half. rooftop: the man is right of centre, face
+ * high. speedboat: the woman leans in from the left, face high.
+ */
+export const SAMPLE_FOCUS = {
+  pier: { fx: 0.32, fy: 0.2 },
+  boulevard: { fx: 0.5, fy: 0.25 },
+  neon: { fx: 0.5, fy: 0.32 },
+  rooftop: { fx: 0.5, fy: 0.3 },
+  speedboat: { fx: 0.42, fy: 0.28 },
+};
+
+/** Fallback focus for uploaded photos: centred, biased to the upper third. */
+export const DEFAULT_FOCUS = { fx: 0.5, fy: 0.32 };
+
+/** The demo photos, in the order the editor loads and cycles them. */
+export const SAMPLE_NAMES = ['pier', 'boulevard', 'neon', 'rooftop', 'speedboat'];
+
 export function createState() {
   return {
     photos: [], // { id, name, img }
@@ -36,8 +60,9 @@ export function resizePanels(state) {
 
 /**
  * Assigns photos to panels that have none, cycling through the photos so a
- * layout with more panels than photos still looks varied, with a slightly
- * different crop per panel.
+ * layout with more panels than photos still looks varied. The per-panel
+ * variation stays small on purpose: the renderer's face-focus anchoring
+ * does the framing, and a big random pan would push faces out of frame.
  */
 export function assignPhotosCycling(state) {
   const photos = state.photos;
@@ -46,9 +71,9 @@ export function assignPhotosCycling(state) {
     const hasPhoto = panel.photoId && photos.some((p) => p.id === panel.photoId);
     if (hasPhoto) return;
     panel.photoId = photos[i % photos.length].id;
-    panel.zoom = 1 + (i % 3) * 0.12;
-    panel.dx = (((i * 37) % 100) / 100 - 0.5) * 0.24;
-    panel.dy = (((i * 53) % 100) / 100 - 0.5) * 0.24;
+    panel.zoom = 1 + (i % 3) * 0.06;
+    panel.dx = (((i * 37) % 100) / 100 - 0.5) * 0.06;
+    panel.dy = (((i * 53) % 100) / 100 - 0.5) * 0.06;
   });
 }
 

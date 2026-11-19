@@ -5,30 +5,39 @@
 export const GRADES = {
   sunset: {
     label: 'Vice Sunset',
-    filter: 'saturate(1.35) contrast(1.06) brightness(1.02)',
+    filter: 'saturate(1.55) contrast(1.14) brightness(1.03)',
     overlays: [
       {
         blend: 'overlay',
         from: [0, 0],
         to: [0, 1],
         stops: [
-          [0, 'rgba(255, 150, 60, 0.22)'],
-          [1, 'rgba(190, 30, 110, 0.40)'],
+          [0, 'rgba(255, 140, 50, 0.32)'],
+          [1, 'rgba(200, 20, 120, 0.54)'],
+        ],
+      },
+      {
+        blend: 'soft-light',
+        from: [0, 0],
+        to: [1, 0],
+        stops: [
+          [0, 'rgba(255, 120, 40, 0.28)'],
+          [1, 'rgba(255, 40, 120, 0.28)'],
         ],
       },
     ],
   },
   neon: {
     label: 'Neon Night',
-    filter: 'saturate(1.45) contrast(1.08)',
+    filter: 'saturate(1.65) contrast(1.12) brightness(1.01)',
     overlays: [
       {
-        blend: 'soft-light',
+        blend: 'overlay',
         from: [0, 0],
         to: [1, 0],
         stops: [
-          [0, 'rgba(0, 220, 200, 0.45)'],
-          [1, 'rgba(255, 40, 160, 0.45)'],
+          [0, 'rgba(0, 220, 200, 0.5)'],
+          [1, 'rgba(255, 40, 160, 0.5)'],
         ],
       },
       {
@@ -36,7 +45,7 @@ export const GRADES = {
         from: [0, 0],
         to: [0, 1],
         stops: [
-          [0, 'rgba(8, 8, 40, 0.35)'],
+          [0, 'rgba(8, 8, 40, 0.42)'],
           [1, 'rgba(8, 8, 40, 0)'],
         ],
       },
@@ -44,45 +53,45 @@ export const GRADES = {
   },
   gold: {
     label: 'Palm Gold',
-    filter: 'sepia(0.28) saturate(1.35) contrast(1.04)',
+    filter: 'sepia(0.35) saturate(1.5) contrast(1.08) brightness(1.02)',
     overlays: [
       {
         blend: 'soft-light',
         from: [0, 0],
         to: [0, 1],
         stops: [
-          [0, 'rgba(255, 205, 90, 0.30)'],
-          [1, 'rgba(120, 60, 0, 0.35)'],
+          [0, 'rgba(255, 205, 90, 0.4)'],
+          [1, 'rgba(120, 60, 0, 0.44)'],
         ],
       },
     ],
   },
   tealheat: {
     label: 'Teal Heat',
-    filter: 'saturate(1.25) contrast(1.07)',
+    filter: 'saturate(1.45) contrast(1.12) brightness(1.01)',
     overlays: [
       {
         blend: 'color',
         from: [0, 0],
         to: [0, 1],
         stops: [
-          [0, 'rgba(0, 180, 180, 0.45)'],
-          [1, 'rgba(255, 120, 40, 0.45)'],
+          [0, 'rgba(0, 180, 180, 0.58)'],
+          [1, 'rgba(255, 120, 40, 0.58)'],
         ],
       },
     ],
   },
   noir: {
     label: 'Mono Noir',
-    filter: 'grayscale(1) contrast(1.18) brightness(1.03)',
+    filter: 'grayscale(1) contrast(1.22) brightness(1.04)',
     overlays: [
       {
         blend: 'overlay',
         from: [0, 0],
         to: [0, 1],
         stops: [
-          [0, 'rgba(255, 240, 220, 0.14)'],
-          [1, 'rgba(10, 10, 20, 0.32)'],
+          [0, 'rgba(255, 240, 220, 0.16)'],
+          [1, 'rgba(10, 10, 20, 0.36)'],
         ],
       },
     ],

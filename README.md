@@ -18,9 +18,10 @@ files — no server, no upload, your photos never leave your machine.
   halftone title block in the centre), Tilted Snapshots (polaroid cards) and
   Poster.
 - **Any photo** — upload one or more photos (file picker or drag & drop), or
-  use the two built-in demo photos. Click a panel to select it, drag to move
+  use the five built-in demo photos. Click a panel to select it, drag to move
   the photo inside it, scroll or use the slider to zoom. Fill several panels
-  with one photo or several.
+  with one photo or several. Each photo's default crop keeps its subject in
+  frame; the pan can never slide the photo off its panel.
 - **Five colour grades** — Vice Sunset, Neon Night, Palm Gold, Teal Heat and
   Mono Noir, applied as canvas gradient maps over every panel.
 - **Lettering** — a bold caption in Anton (white, sunset gradient or neon
@@ -59,8 +60,9 @@ and caption. `window.__shotReady` is set once the scene has painted.
 
 - Lettering uses Anton and Pacifico, both under the SIL Open Font License
   (see `app/fonts/OFL.txt`), shipped as local files under `app/fonts/`.
-- The two demo photos under `app/samples/` were made with an image model for
-  make.fun and are free to use. All titles are invented; nothing here uses a
+- The five demo photos under `app/samples/` were made with an image model —
+  two shipped with the competition kit, three made for this entry — and are
+  free to use. All titles are invented; nothing here uses a
   Rockstar Games logo, artwork, character or font.
 
 ## Licence

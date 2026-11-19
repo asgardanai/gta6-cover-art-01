@@ -103,14 +103,17 @@ export const LAYOUTS = {
     panelCount: 3,
     bg: ['#2a1238', '#12071c'],
     panels(w, h) {
+      // The cards start low enough that the subtitle clears the top card
+      // even where its rotated corner lifts: title band ends ~0.16h, the
+      // highest card corner stays below ~0.175h.
       return [
-        { x: w * 0.05, y: h * 0.17, w: w * 0.54, h: h * 0.48, rot: -0.09, frame: 'polaroid' },
-        { x: w * 0.44, y: h * 0.3, w: w * 0.51, h: h * 0.46, rot: 0.07, frame: 'polaroid' },
-        { x: w * 0.12, y: h * 0.6, w: w * 0.56, h: h * 0.34, rot: -0.03, frame: 'polaroid' },
+        { x: w * 0.05, y: h * 0.21, w: w * 0.54, h: h * 0.44, rot: -0.09, frame: 'polaroid' },
+        { x: w * 0.44, y: h * 0.34, w: w * 0.51, h: h * 0.42, rot: 0.07, frame: 'polaroid' },
+        { x: w * 0.12, y: h * 0.64, w: w * 0.56, h: h * 0.3, rot: -0.03, frame: 'polaroid' },
       ];
     },
     title(w, h) {
-      return { x: w * 0.05, y: h * 0.025, w: w * 0.9, h: h * 0.12, align: 'center', size: h * 0.075 };
+      return { x: w * 0.05, y: h * 0.02, w: w * 0.9, h: h * 0.14, align: 'center', size: h * 0.075 };
     },
   },
 

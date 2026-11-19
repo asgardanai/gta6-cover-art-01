@@ -9,8 +9,11 @@ import { coverGeometry, renderCover, SIZES, SIZE_IDS } from './renderer.js';
 import {
   assignPhotosCycling,
   createHistory,
+  DEFAULT_FOCUS,
   resizePanels,
   restoreState,
+  SAMPLE_FOCUS,
+  SAMPLE_NAMES,
   snapshotState,
 } from './state.js';
 
@@ -124,7 +127,7 @@ export function createEditorApp(state) {
     const job = (async () => {
       const url = `samples/${name}.jpg`;
       const img = await loadImage(url);
-      const photo = { id, name, img, url };
+      const photo = { id, name, img, url, focus: SAMPLE_FOCUS[name] ?? DEFAULT_FOCUS };
       state.photos.push(photo);
       assignPhotosCycling(state);
       renderThumbs();
@@ -142,7 +145,7 @@ export function createEditorApp(state) {
       const id = `upload-${uploadCount}`;
       const url = URL.createObjectURL(file);
       const img = await loadImage(url);
-      state.photos.push({ id, name: file.name, img, url });
+      state.photos.push({ id, name: file.name, img, url, focus: DEFAULT_FOCUS });
       added.push(id);
     }
     if (!added.length) return;
@@ -394,7 +397,7 @@ export function createEditorApp(state) {
   subtitleInput.value = state.subtitle;
   redraw();
   ensureFonts().then(() => redraw());
-  Promise.all([loadSample('pier'), loadSample('boulevard')])
+  Promise.all(SAMPLE_NAMES.map((name) => loadSample(name)))
     .then(() => redraw())
     .catch(() => say('Sample photos could not load — add your own to begin.'));
 

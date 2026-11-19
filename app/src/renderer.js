@@ -4,6 +4,7 @@
 
 import { GRADES } from './grades.js';
 import { LAYOUTS } from './layouts.js';
+import { DEFAULT_FOCUS } from './state.js';
 
 export const SIZES = {
   '1080x1080': [1080, 1080],
@@ -37,8 +38,12 @@ function roundRectPath(ctx, x, y, w, h, r) {
   }
 }
 
-/** Draws one photo panel: the photo (cover-fit, zoomed, panned), its grade, and its frame. */
-function drawPanel(ctx, rect, panel, photo, grade) {
+/** Draws one photo panel: the photo (cover-fit, zoomed, panned), its grade, and its frame.
+ * `record` is the photo record ({ img, focus }) or null for an empty panel.
+ * The default crop anchors on the photo's focus point (usually the face),
+ * and the total pan is clamped to the cover slack, so the photo can never
+ * slide far enough to expose the background behind the panel. */
+function drawPanel(ctx, rect, panel, record, grade) {
   const rot = rect.rot ?? 0;
   const cx = rect.x + rect.w / 2;
   const cy = rect.y + rect.h / 2;
@@ -62,10 +67,19 @@ function drawPanel(ctx, rect, panel, photo, grade) {
   const radius = Math.min(rect.w, rect.h) * 0.012;
   roundRectPath(ctx, rect.x, rect.y, rect.w, rect.h, radius);
   ctx.clip();
+  const photo = record?.img ?? null;
   if (photo) {
     const geo = coverGeometry(photo, rect, panel);
-    const px = cx + panel.dx * rect.w - geo.dw / 2;
-    const py = cy + panel.dy * rect.h - geo.dh / 2;
+    const focus = record.focus ?? DEFAULT_FOCUS;
+    // Pan that would centre the focus point in the panel, plus the user's
+    // own pan, clamped to the slack the cover-fit leaves: the photo always
+    // fills the panel, and the face stays in frame by default.
+    const focusDx = ((0.5 - focus.fx) * geo.dw) / rect.w;
+    const focusDy = ((0.5 - focus.fy) * geo.dh) / rect.h;
+    const effDx = Math.max(-geo.maxDx, Math.min(geo.maxDx, focusDx + panel.dx));
+    const effDy = Math.max(-geo.maxDy, Math.min(geo.maxDy, focusDy + panel.dy));
+    const px = cx + effDx * rect.w - geo.dw / 2;
+    const py = cy + effDy * rect.h - geo.dh / 2;
     ctx.filter = grade.filter;
     ctx.drawImage(photo, px, py, geo.dw, geo.dh);
     ctx.filter = 'none';
@@ -176,14 +190,20 @@ function drawStarRow(ctx, x, y, size, align) {
   }
 }
 
-/** A diagonal ribbon across the top-right corner. */
+/**
+ * A diagonal ribbon across the bottom-right corner. Used only for the
+ * centre-block layout (Nine Panel), where the whole canvas is photos: the
+ * ribbon crosses just the bottom-right cell's far corner, never its
+ * face-centred subject. Band layouts use the pill below instead — a
+ * diagonal ribbon there would sweep through the star row.
+ */
 function drawBadgeRibbon(ctx, w, h) {
-  const len = w * 0.3;
-  const band = Math.max(18, h * 0.048);
+  const len = w * 0.22;
+  const band = Math.max(16, h * 0.04);
   ctx.save();
-  ctx.translate(w, 0);
-  ctx.rotate(-Math.PI / 4);
-  const cx = w * 0.075;
+  ctx.translate(w, h);
+  ctx.rotate(Math.PI / 4);
+  const cx = w * 0.05;
   const grad = ctx.createLinearGradient(-cx - len / 2, 0, -cx + len / 2, 0);
   grad.addColorStop(0, '#ff2d78');
   grad.addColorStop(1, '#ff7a18');
@@ -198,6 +218,35 @@ function drawBadgeRibbon(ctx, w, h) {
   ctx.textBaseline = 'middle';
   ctx.fillText('COVER ART', -cx, 0);
   ctx.restore();
+}
+
+/**
+ * A small horizontal badge pill at the bottom-right of the caption band,
+ * below the star row. Band layouts (Four Panel, Hero + Three, Poster, Full
+ * Bleed) put the stars at the band's right, so a diagonal corner ribbon
+ * would cross them; the pill sits in the band's empty lower-right corner.
+ */
+function drawBadgePill(ctx, w, h, title) {
+  const pw = w * 0.115;
+  const ph = Math.max(15, h * 0.038);
+  const x = title.x + title.w - pw;
+  const y = title.y + title.h - ph - h * 0.012;
+  const grad = ctx.createLinearGradient(x, y, x + pw, y);
+  grad.addColorStop(0, '#ff2d78');
+  grad.addColorStop(1, '#ff7a18');
+  ctx.save();
+  ctx.shadowColor = 'rgba(0, 0, 0, 0.4)';
+  ctx.shadowBlur = ph * 0.3;
+  ctx.shadowOffsetY = ph * 0.08;
+  ctx.fillStyle = grad;
+  roundRectPath(ctx, x, y, pw, ph, ph / 2);
+  ctx.fill();
+  ctx.restore();
+  ctx.fillStyle = '#ffffff';
+  ctx.font = `${Math.round(ph * 0.48)}px Anton, sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('COVER ART', x + pw / 2, y + ph / 2 + ph * 0.03);
 }
 
 let noiseTile = null;
@@ -333,10 +382,10 @@ export function renderCover(canvas, state, opts = {}) {
   const rects = layout.panels(w, h);
   rects.forEach((rect, i) => {
     const panel = state.panels[i];
-    const photo = panel && panel.photoId
-      ? state.photos.find((p) => p.id === panel.photoId)?.img ?? null
+    const record = panel && panel.photoId
+      ? state.photos.find((p) => p.id === panel.photoId) ?? null
       : null;
-    drawPanel(ctx, rect, panel ?? { photoId: null, zoom: 1, dx: 0, dy: 0 }, photo, grade);
+    drawPanel(ctx, rect, panel ?? { photoId: null, zoom: 1, dx: 0, dy: 0 }, record, grade);
   });
 
   if (layout.scrim) {
@@ -351,7 +400,8 @@ export function renderCover(canvas, state, opts = {}) {
   drawCaption(ctx, title, state, w, h);
 
   if (state.badge && state.layout !== 'tilted') {
-    drawBadgeRibbon(ctx, w, h);
+    if (title.block) drawBadgeRibbon(ctx, w, h);
+    else drawBadgePill(ctx, w, h, title);
     const starSize = Math.max(12, h * 0.028);
     if (title.align === 'center') {
       drawStarRow(ctx, title.x + title.w / 2, title.y + title.h - starSize * 0.4, starSize, 'center');
