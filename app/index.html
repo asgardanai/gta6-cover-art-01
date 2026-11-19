@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sunset Cover Studio — GTA-style cover art maker</title>
+<link rel="stylesheet" href="./style.css">
+<link rel="icon" href="data:,">
+</head>
+<body>
+<main class="shell">
+  <aside class="controls">
+    <h1>Sunset Cover Studio</h1>
+    <p class="tag">Turn any photo into poster-style cover art. Everything runs
+    offline in your browser — your photos never leave this machine.</p>
+
+    <section class="group">
+      <h2>Photos</h2>
+      <div id="drop-zone" class="drop-zone">
+        <p>Drop photos here, or</p>
+        <label class="file-btn">Choose photos
+          <input id="photo-input" type="file" accept="image/*" multiple hidden>
+        </label>
+      </div>
+      <div id="thumbs" class="thumbs" aria-label="Your photos"></div>
+      <button id="fill-all" type="button" class="secondary">Use this photo in every panel</button>
+    </section>
+
+    <section class="group">
+      <h2>Layout</h2>
+      <div class="btn-row">
+        <button type="button" class="layout-btn" data-layout="grid4">Four Panel</button>
+        <button type="button" class="layout-btn" data-layout="hero3">Hero + Three</button>
+        <button type="button" class="layout-btn" data-layout="fullbleed">Full Bleed</button>
+        <button type="button" class="layout-btn" data-layout="nine">Nine Panel</button>
+        <button type="button" class="layout-btn" data-layout="tilted">Tilted Snapshots</button>
+        <button type="button" class="layout-btn" data-layout="poster">Poster</button>
+      </div>
+    </section>
+
+    <section class="group">
+      <h2>Colour grade</h2>
+      <div class="btn-row">
+        <button type="button" class="grade-btn" data-grade="sunset">Vice Sunset</button>
+        <button type="button" class="grade-btn" data-grade="neon">Neon Night</button>
+        <button type="button" class="grade-btn" data-grade="gold">Palm Gold</button>
+        <button type="button" class="grade-btn" data-grade="tealheat">Teal Heat</button>
+        <button type="button" class="grade-btn" data-grade="noir">Mono Noir</button>
+      </div>
+    </section>
+
+    <section class="group">
+      <h2>Words</h2>
+      <label>Caption
+        <input id="caption" type="text" maxlength="40" value="Sunset Heist">
+      </label>
+      <label>Subtitle
+        <input id="subtitle" type="text" maxlength="40" value="Neon Shore">
+      </label>
+      <label>Lettering
+        <select id="lettering">
+          <option value="sunset">Sunset gradient</option>
+          <option value="white">White</option>
+          <option value="neon">Neon glow</option>
+        </select>
+      </label>
+    </section>
+
+    <section class="group">
+      <h2>Effects</h2>
+      <label class="check"><input id="toggle-grain" type="checkbox" checked> Film grain</label>
+      <label class="check"><input id="toggle-vignette" type="checkbox" checked> Vignette</label>
+      <label class="check"><input id="toggle-halftone" type="checkbox" checked> Halftone title block</label>
+      <label class="check"><input id="toggle-badge" type="checkbox" checked> Badge ribbon &amp; stars</label>
+    </section>
+
+    <section class="group">
+      <h2>Export size</h2>
+      <div class="btn-row sizes">
+        <label><input type="radio" name="size" value="1080x1080" checked> 1080 × 1080</label>
+        <label><input type="radio" name="size" value="1080x1350"> 1080 × 1350</label>
+        <label><input type="radio" name="size" value="1920x1080"> 1920 × 1080</label>
+        <label><input type="radio" name="size" value="1080x1920"> 1080 × 1920</label>
+      </div>
+    </section>
+
+    <section class="group actions">
+      <button id="undo" type="button" class="secondary">Undo</button>
+      <button id="redo" type="button" class="secondary">Redo</button>
+      <button id="export-one" type="button" class="primary">Export PNG</button>
+      <button id="export-all" type="button" class="primary">Export all sizes</button>
+    </section>
+    <p id="status" role="status"></p>
+  </aside>
+
+  <section class="stage">
+    <div class="canvas-wrap">
+      <canvas id="preview" width="900" height="900" aria-label="Cover preview"></canvas>
+    </div>
+    <div class="panel-tools">
+      <span id="panel-label">Panel 1 of 4</span>
+      <label>Zoom
+        <input id="zoom" type="range" min="100" max="300" value="100">
+        <span id="zoom-label">100%</span>
+      </label>
+      <span class="hint">Click a panel to select it, drag to move the photo, scroll to zoom.</span>
+    </div>
+  </section>
+</main>
+<script type="module" src="./src/main.js"></script>
+</body>
+</html>
